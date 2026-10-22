@@ -1,53 +1,47 @@
 # Explaining Rankings: Linear and Beyond
 
-This repository contains the code used for the ranking experiments. It includes
-linear and polynomial methods, along with a small example dataset.
+This project runs experiments for two ranking methods: the hybrid method and
+sampled Kendall local search.
 
-## Run the code
+## Before you run it
 
-You will need Python 3.10 or newer. From this folder, install the required
-packages:
-
-```bash
-python3 -m pip install numpy scipy gurobipy
-```
-
-Some methods use Gurobi, so you will also need a working Gurobi license. If you
-only want to try the non-Gurobi methods, the script will still run those and
-report the Gurobi-based runs as unavailable.
-
-Start with the short test run:
+You need Python, NumPy, Gurobi, and a working Gurobi license:
 
 ```bash
-bash run.sh --quick
+python3 -m pip install numpy gurobipy
 ```
 
-This uses the included `dataset_100.csv` and saves results in
-`kt_experiments/`. The main summary is written to
-`kt_experiments/summary_by_config.csv`.
+The runner is configured near the top of `run.sh`. Choose the dataset name and
+path there. The included `new_adult` dataset is at:
 
-To run the full set of experiments instead, use:
+```bash
+DATASETPATH="data/new_adult.csv"
+```
+
+Create the folder used for results once:
+
+```bash
+mkdir -p full_output
+```
+
+Each dataset should be a headerless CSV file: one item per row and numeric
+features in the columns. The row order is used as the target ranking.
+
+## Run the experiments
+
+From the project folder, run:
 
 ```bash
 bash run.sh
 ```
 
-The full run can take a while. You can preview the commands without running
-anything with:
+The script tries a series of sample sizes for the hybrid method first, then
+does the same for sampled local search. Each run has a 30-minute limit. If a
+run fails or times out, that method stops and moves on.
 
-```bash
-bash run.sh --dry-run
-```
+Results are saved in `full_output/`. Files beginning with `*_hybrid_` belong
+to the hybrid method; files beginning with `*_sampled_` belong to sampled local
+search.
 
-## Use your own data
-
-Provide a headerless CSV file where each row is one item and each column is a
-numeric feature:
-
-```bash
-DATA=/full/path/to/your-data.csv bash run.sh --quick
-```
-
-By default, the CSV row order is treated as the target ranking. Run
-`bash run.sh --help` to see the available options, including how to supply a
-different target ranking.
+To use another dataset or change the sample sizes, edit `DATASET`,
+`DATASETPATH`, or `samples` at the top of `run.sh` before running it.
